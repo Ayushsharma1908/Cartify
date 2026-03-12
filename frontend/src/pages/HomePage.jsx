@@ -1,27 +1,97 @@
-import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { FiArrowRight, FiShoppingBag, FiTruck, FiShield, FiRefreshCw } from 'react-icons/fi';
-import { HiSparkles } from 'react-icons/hi';
-import * as api from '../services/api';
-import ProductCard from '../components/product/ProductCard';
-import { ProductCardSkeleton } from '../components/common/Skeleton';
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  FiArrowRight,
+  FiShoppingBag,
+  FiTruck,
+  FiShield,
+  FiRefreshCw,
+} from "react-icons/fi";
+import { HiSparkles } from "react-icons/hi";
+import * as api from "../services/api";
+import ProductCard from "../components/product/ProductCard";
+import { ProductCardSkeleton } from "../components/common/Skeleton";
 
 const CATEGORY_DATA = [
-  { name: 'Mobiles', emoji: '📱', color: 'from-blue-500 to-blue-600', bg: 'bg-blue-50' },
-  { name: 'Electronics', emoji: '💻', color: 'from-violet-500 to-violet-600', bg: 'bg-violet-50' },
-  { name: 'Fashion', emoji: '👗', color: 'from-pink-500 to-pink-600', bg: 'bg-pink-50' },
-  { name: 'Home & Furniture', emoji: '🛋️', color: 'from-amber-500 to-amber-600', bg: 'bg-amber-50' },
-  { name: 'Beauty', emoji: '💄', color: 'from-rose-500 to-rose-600', bg: 'bg-rose-50' },
-  { name: 'Sports', emoji: '⚽', color: 'from-green-500 to-green-600', bg: 'bg-green-50' },
-  { name: 'Books', emoji: '📚', color: 'from-teal-500 to-teal-600', bg: 'bg-teal-50' },
-  { name: 'Grocery', emoji: '🛒', color: 'from-orange-500 to-orange-600', bg: 'bg-orange-50' },
+  {
+    name: "Mobiles",
+    emoji: "📱",
+    color: "from-blue-500 to-blue-600",
+    bg: "bg-blue-50",
+  },
+  {
+    name: "Electronics",
+    emoji: "💻",
+    color: "from-violet-500 to-violet-600",
+    bg: "bg-violet-50",
+  },
+  {
+    name: "Fashion",
+    emoji: "👗",
+    color: "from-pink-500 to-pink-600",
+    bg: "bg-pink-50",
+  },
+  {
+    name: "Home & Furniture",
+    emoji: "🛋️",
+    color: "from-amber-500 to-amber-600",
+    bg: "bg-amber-50",
+  },
+  {
+    name: "Beauty",
+    emoji: "💄",
+    color: "from-rose-500 to-rose-600",
+    bg: "bg-rose-50",
+  },
+  {
+    name: "Sports",
+    emoji: "⚽",
+    color: "from-green-500 to-green-600",
+    bg: "bg-green-50",
+  },
+  {
+    name: "Books",
+    emoji: "📚",
+    color: "from-teal-500 to-teal-600",
+    bg: "bg-teal-50",
+  },
+  {
+    name: "Grocery",
+    emoji: "🛒",
+    color: "from-orange-500 to-orange-600",
+    bg: "bg-orange-50",
+  },
 ];
 
 const FEATURES = [
-  { icon: FiTruck, title: 'Free Delivery', desc: 'On orders above ₹499', color: 'text-blue-600', bg: 'bg-blue-50' },
-  { icon: FiShield, title: 'Secure Payment', desc: 'Stripe-powered checkout', color: 'text-green-600', bg: 'bg-green-50' },
-  { icon: FiRefreshCw, title: 'Easy Returns', desc: '30-day return policy', color: 'text-orange-600', bg: 'bg-orange-50' },
-  { icon: FiShoppingBag, title: '10M+ Products', desc: 'Across all categories', color: 'text-violet-600', bg: 'bg-violet-50' },
+  {
+    icon: FiTruck,
+    title: "Free Delivery",
+    desc: "On orders above ₹499",
+    color: "text-blue-600",
+    bg: "bg-blue-50",
+  },
+  {
+    icon: FiShield,
+    title: "Secure Payment",
+    desc: "Stripe-powered checkout",
+    color: "text-green-600",
+    bg: "bg-green-50",
+  },
+  {
+    icon: FiRefreshCw,
+    title: "Easy Returns",
+    desc: "30-day return policy",
+    color: "text-orange-600",
+    bg: "bg-orange-50",
+  },
+  {
+    icon: FiShoppingBag,
+    title: "10M+ Products",
+    desc: "Across all categories",
+    color: "text-violet-600",
+    bg: "bg-violet-50",
+  },
 ];
 
 export default function HomePage() {
@@ -29,17 +99,17 @@ export default function HomePage() {
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [newArrivals, setNewArrivals] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const [featuredRes, newRes] = await Promise.all([
           api.getProducts({ featured: true, limit: 8 }),
-          api.getProducts({ sort: 'newest', limit: 8 })
+          api.getProducts({ sort: "newest", limit: 8 }),
         ]);
-        setFeaturedProducts(featuredRes.data.products);
-        setNewArrivals(newRes.data.products);
+        setFeaturedProducts(featuredRes?.data?.products || []);
+        setNewArrivals(newRes?.data?.products || []);
       } catch (err) {
         console.error(err);
       } finally {
@@ -74,12 +144,14 @@ export default function HomePage() {
           </div>
 
           <h1 className="text-4xl md:text-6xl font-display font-bold text-white mb-5 leading-tight">
-            Shop Everything,<br />
+            Shop Everything,
+            <br />
             <span className="text-cyan-300">Delivered Fast</span>
           </h1>
 
           <p className="text-lg text-blue-100 mb-10 max-w-xl mx-auto">
-            Millions of products across hundreds of categories. Unbeatable prices. Free shipping above ₹499.
+            Millions of products across hundreds of categories. Unbeatable
+            prices. Free shipping above ₹499.
           </p>
 
           {/* Search */}
@@ -92,15 +164,22 @@ export default function HomePage() {
                 placeholder="Search phones, laptops, fashion..."
                 className="flex-1 px-5 py-4 text-slate-700 outline-none text-sm sm:text-base"
               />
-              <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-4 font-semibold text-sm transition-colors flex items-center gap-2 m-1.5 rounded-xl">
+              <button
+                type="submit"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-4 font-semibold text-sm transition-colors flex items-center gap-2 m-1.5 rounded-xl"
+              >
                 Search <FiArrowRight />
               </button>
             </div>
           </form>
 
           <div className="flex justify-center gap-4 mt-8 text-blue-200 text-sm">
-            {['Smartphones', 'Laptops', 'Sneakers', 'Headphones'].map(tag => (
-              <button key={tag} onClick={() => navigate(`/products?keyword=${tag}`)} className="hover:text-white transition-colors">
+            {["Smartphones", "Laptops", "Sneakers", "Headphones"].map((tag) => (
+              <button
+                key={tag}
+                onClick={() => navigate(`/products?keyword=${tag}`)}
+                className="hover:text-white transition-colors"
+              >
                 {tag}
               </button>
             ))}
@@ -113,7 +192,9 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-6 py-5 grid grid-cols-2 md:grid-cols-4 gap-4">
           {FEATURES.map(({ icon: Icon, title, desc, color, bg }) => (
             <div key={title} className="flex items-center gap-3">
-              <div className={`w-10 h-10 ${bg} rounded-xl flex items-center justify-center shrink-0`}>
+              <div
+                className={`w-10 h-10 ${bg} rounded-xl flex items-center justify-center shrink-0`}
+              >
                 <Icon className={color} size={18} />
               </div>
               <div>
@@ -129,10 +210,17 @@ export default function HomePage() {
       <section className="max-w-7xl mx-auto px-6 py-12">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h2 className="text-2xl font-display font-bold text-slate-900">Shop by Category</h2>
-            <p className="text-slate-500 text-sm mt-1">Explore our wide range of products</p>
+            <h2 className="text-2xl font-display font-bold text-slate-900">
+              Shop by Category
+            </h2>
+            <p className="text-slate-500 text-sm mt-1">
+              Explore our wide range of products
+            </p>
           </div>
-          <Link to="/products" className="text-blue-600 text-sm font-semibold flex items-center gap-1 hover:gap-2 transition-all">
+          <Link
+            to="/products"
+            className="text-blue-600 text-sm font-semibold flex items-center gap-1 hover:gap-2 transition-all"
+          >
             View all <FiArrowRight size={14} />
           </Link>
         </div>
@@ -145,7 +233,9 @@ export default function HomePage() {
               className={`${bg} rounded-2xl p-4 text-center hover:scale-105 hover:shadow-md transition-all duration-200 group`}
             >
               <div className="text-3xl mb-2">{emoji}</div>
-              <p className="text-xs font-semibold text-slate-700 leading-tight">{name}</p>
+              <p className="text-xs font-semibold text-slate-700 leading-tight">
+                {name}
+              </p>
             </Link>
           ))}
         </div>
@@ -155,40 +245,57 @@ export default function HomePage() {
       <section className="max-w-7xl mx-auto px-6 pb-12">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h2 className="text-2xl font-display font-bold text-slate-900">Featured Products</h2>
-            <p className="text-slate-500 text-sm mt-1">Hand-picked favorites just for you</p>
+            <h2 className="text-2xl font-display font-bold text-slate-900">
+              Featured Products
+            </h2>
+            <p className="text-slate-500 text-sm mt-1">
+              Hand-picked favorites just for you
+            </p>
           </div>
-          <Link to="/products?featured=true" className="text-blue-600 text-sm font-semibold flex items-center gap-1 hover:gap-2 transition-all">
+          <Link
+            to="/products?featured=true"
+            className="text-blue-600 text-sm font-semibold flex items-center gap-1 hover:gap-2 transition-all"
+          >
             View all <FiArrowRight size={14} />
           </Link>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
           {loading
-            ? Array(8).fill(0).map((_, i) => <ProductCardSkeleton key={i} />)
-            : featuredProducts.map(p => <ProductCard key={p._id} product={p} />)
-          }
+            ? Array(8)
+                .fill(0)
+                .map((_, i) => <ProductCardSkeleton key={i} />)
+            : featuredProducts.map((p) => (
+                <ProductCard key={p._id} product={p} />
+              ))}
         </div>
       </section>
-
 
       {/* New Arrivals */}
       <section className="max-w-7xl mx-auto px-6 pb-16">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h2 className="text-2xl font-display font-bold text-slate-900">New Arrivals</h2>
-            <p className="text-slate-500 text-sm mt-1">Just landed in our store</p>
+            <h2 className="text-2xl font-display font-bold text-slate-900">
+              New Arrivals
+            </h2>
+            <p className="text-slate-500 text-sm mt-1">
+              Just landed in our store
+            </p>
           </div>
-          <Link to="/products?sort=newest" className="text-blue-600 text-sm font-semibold flex items-center gap-1 hover:gap-2 transition-all">
+          <Link
+            to="/products?sort=newest"
+            className="text-blue-600 text-sm font-semibold flex items-center gap-1 hover:gap-2 transition-all"
+          >
             View all <FiArrowRight size={14} />
           </Link>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
           {loading
-            ? Array(8).fill(0).map((_, i) => <ProductCardSkeleton key={i} />)
-            : newArrivals.map(p => <ProductCard key={p._id} product={p} />)
-          }
+            ? Array(8)
+                .fill(0)
+                .map((_, i) => <ProductCardSkeleton key={i} />)
+            : newArrivals.map((p) => <ProductCard key={p._id} product={p} />)}
         </div>
       </section>
     </div>
