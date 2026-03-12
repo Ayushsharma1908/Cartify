@@ -57,7 +57,13 @@ app.use((err, req, res, next) => {
 });
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI)
+const mongoUri = process.env.MONGO_URI;
+if (!mongoUri || typeof mongoUri !== 'string') {
+  console.error('❌ MONGO_URI is not set. Add it in Railway → Variables.');
+  process.exit(1);
+}
+
+mongoose.connect(mongoUri)
   .then(() => {
     console.log('✅ MongoDB connected successfully');
     const PORT = process.env.PORT || 5000;
@@ -69,5 +75,5 @@ mongoose.connect(process.env.MONGO_URI)
     console.error('❌ MongoDB connection error:', err.message);
     process.exit(1);
   });
-  console.log("Mongo URI:", process.env.MONGO_URI);
+
 module.exports = app;

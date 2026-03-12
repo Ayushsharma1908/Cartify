@@ -205,6 +205,48 @@ curl -X POST http://localhost:5000/api/products/seed
 
 ---
 
+## Deployment
+
+### Backend on Render
+
+1. Push your code to GitHub.
+2. Go to [Render](https://render.com) → **New** → **Web Service**.
+3. Connect your repo and configure:
+   - **Root Directory:** `backend`
+   - **Runtime:** Node
+   - **Build Command:** `npm install`
+   - **Start Command:** `npm start`
+4. Add **Environment Variables:**
+   - `MONGO_URI` – MongoDB Atlas connection string
+   - `JWT_SECRET` – Strong random string
+   - `JWT_EXPIRE` – `7d`
+   - `STRIPE_SECRET_KEY` – Stripe secret key
+   - `CLIENT_URL` – `https://your-app.vercel.app` (Vercel URL after frontend deploy)
+5. Deploy. Note your API URL (e.g. `https://cartify-api.onrender.com`).
+
+### Frontend on Vercel
+
+1. Go to [Vercel](https://vercel.com) → **Add New** → **Project**.
+2. Import your GitHub repo.
+3. Configure:
+   - **Root Directory:** `frontend` (or set in project settings)
+   - **Framework Preset:** Create React App
+   - **Build Command:** `npm run build`
+   - **Output Directory:** `build`
+4. Add **Environment Variables:**
+   - `REACT_APP_API_URL` – `https://your-api.onrender.com/api`
+   - `REACT_APP_STRIPE_PUBLIC_KEY` – Stripe publishable key
+   - `REACT_APP_SUPABASE_URL` – Supabase project URL
+   - `REACT_APP_SUPABASE_ANON_KEY` – Supabase anon key
+5. Deploy. Note your frontend URL (e.g. `https://cartify.vercel.app`).
+
+6. **Update Render backend** – Set `CLIENT_URL` to your Vercel URL.
+
+7. **Update Supabase** – In Auth → URL config, add redirect:  
+   `https://your-app.vercel.app/auth/callback`
+
+---
+
 ## Troubleshooting
 
 - **OpenSSL error** – Use Node 18+ or run frontend with:  
