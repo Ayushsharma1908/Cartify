@@ -13,18 +13,29 @@ const userRoutes = require('./routes/users');
 
 const app = express();
 
-// Middleware - allow both CRA (3000) and Vite (5173) dev origins
+// CORS - allow localhost (dev) + CLIENT_URL (prod)
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:5173',
+  'http://127.0.0.1:3000',
+  "https://cartify-rosy-six.vercel.app",
   process.env.CLIENT_URL
 ].filter(Boolean);
+
 app.use(cors({
-  origin: (origin, cb) => {
-    if (!origin || allowedOrigins.includes(origin)) cb(null, true);
-    else cb(null, false);
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin) || origin.endsWith(".vercel.app")) {
+      return callback(null, true);
+    }
+
+    return callback(new Error("Not allowed by CORS"));
   },
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  optionsSuccessStatus: 200
 }));
 app.use(morgan('dev'));
 
