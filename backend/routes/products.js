@@ -98,74 +98,6 @@ router.get('/categories', async (req, res) => {
   }
 });
 
-// @GET /api/products/:id
-router.get('/:id', async (req, res) => {
-  try {
-    const product = await Product.findById(req.params.id).populate('reviews.user', 'name avatar');
-    if (!product || !product.isActive) {
-      return res.status(404).json({ success: false, message: 'Product not found' });
-    }
-    res.json({ success: true, product });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
-  }
-});
-
-// @POST /api/products - Admin only
-router.post('/', protect, adminOnly, async (req, res) => {
-  try {
-    const product = await Product.create({ ...req.body, seller: req.user._id });
-    res.status(201).json({ success: true, product });
-  } catch (error) {
-    res.status(400).json({ success: false, message: error.message });
-  }
-});
-
-// @PUT /api/products/:id - Admin only
-router.put('/:id', protect, adminOnly, async (req, res) => {
-  try {
-    const product = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
-    if (!product) return res.status(404).json({ success: false, message: 'Product not found' });
-    res.json({ success: true, product });
-  } catch (error) {
-    res.status(400).json({ success: false, message: error.message });
-  }
-});
-
-// @DELETE /api/products/:id - Admin only
-router.delete('/:id', protect, adminOnly, async (req, res) => {
-  try {
-    const product = await Product.findByIdAndUpdate(req.params.id, { isActive: false }, { new: true });
-    if (!product) return res.status(404).json({ success: false, message: 'Product not found' });
-    res.json({ success: true, message: 'Product deleted successfully' });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
-  }
-});
-
-// @POST /api/products/:id/review
-router.post('/:id/review', protect, async (req, res) => {
-  try {
-    const { rating, comment } = req.body;
-    const product = await Product.findById(req.params.id);
-
-    if (!product) return res.status(404).json({ success: false, message: 'Product not found' });
-
-    const alreadyReviewed = product.reviews.find(r => r.user.toString() === req.user._id.toString());
-    if (alreadyReviewed) {
-      return res.status(400).json({ success: false, message: 'You have already reviewed this product' });
-    }
-
-    product.reviews.push({ user: req.user._id, name: req.user.name, rating: Number(rating), comment });
-    product.calculateRating();
-    await product.save();
-
-    res.status(201).json({ success: true, message: 'Review added successfully' });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
-  }
-});
-
 // @POST /api/products/seed - Seed sample products (dev only)
 router.post('/admin/seed', protect, adminOnly, async (req, res) => {
   try {
@@ -260,6 +192,75 @@ router.post('/admin/seed', protect, adminOnly, async (req, res) => {
     await Product.deleteMany({});
     const products = await Product.insertMany(sampleProducts.map(p => ({ ...p, seller: req.user._id })));
     res.json({ success: true, message: `${products.length} products seeded`, products });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// @POST /api/products/:id/review
+router.post('/:id/review', protect, async (req, res) => {
+  try {
+    const { rating, comment } = req.body;
+    const product = await Product.findById(req.params.id);
+
+    if (!product) return res.status(404).json({ success: false, message: 'Product not found' });
+
+    const alreadyReviewed = product.reviews.find(r => r.user.toString() === req.user._id.toString());
+    if (alreadyReviewed) {
+      return res.status(400).json({ success: false, message: 'You have already reviewed this product' });
+    }
+
+    product.reviews.push({ user: req.user._id, name: req.user.name, rating: Number(rating), comment });
+    product.calculateRating();
+    await product.save();
+
+    res.status(201).json({ success: true, message: 'Review added successfully' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// @POST /api/products - Admin only
+router.post('/', protect, adminOnly, async (req, res) => {
+  try {
+    const product = await Product.create({ ...req.body, seller: req.user._id });
+    res.status(201).json({ success: true, product });
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+});
+
+// @PUT /api/products/:id - Admin only
+router.put('/:id', protect, adminOnly, async (req, res) => {
+  try {
+    const product = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+    if (!product) return res.status(404).json({ success: false, message: 'Product not found' });
+    res.json({ success: true, product });
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+});
+
+
+// @DELETE /api/products/:id - Admin only
+router.delete('/:id', protect, adminOnly, async (req, res) => {
+  try {
+    const product = await Product.findByIdAndUpdate(req.params.id, { isActive: false }, { new: true });
+    if (!product) return res.status(404).json({ success: false, message: 'Product not found' });
+    res.json({ success: true, message: 'Product deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// @GET /api/products/:id
+router.get('/:id', async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id).populate('reviews.user', 'name avatar');
+    if (!product || !product.isActive) {
+      return res.status(404).json({ success: false, message: 'Product not found' });
+    }
+    res.json({ success: true, product });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
